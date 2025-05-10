@@ -20,7 +20,7 @@ func main() {
 		archiveName = "ffmpeg-n7.1-latest-win64-gpl-shared-7.1"
 	}
 
-	downloadUrl := "https://github.com/Wieku/FFmpeg-Builds/releases/download/latest/" + archiveName + ".zip"
+	downloadUrl := "https://github.com/QuickFatHedgehog/FFmpeg-Builds-SVT-AV1-HDR/releases/download/latest/" + archiveName + ".zip"
 
 	file := download(downloadUrl)
 

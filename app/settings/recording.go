@@ -42,7 +42,7 @@ func initRecording() *recording {
 			CRF:               22,
 			Profile:           "main",
 			Preset:            "7",
-			AdditionalOptions: "",
+			AdditionalOptions: "-svtav1-params tune=0:enable-tf=0:enable-restoration=0:complex-hvs=1:spy-rd=2:psy-rd=1.00",
 		},
 		H264NvencSettings: &h264NvencSettings{
 			RateControl:       "cq",
