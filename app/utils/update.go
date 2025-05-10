@@ -12,7 +12,7 @@ import (
 
 // GetLatestVersionFromGitHub makes a request to GitHub and returns url and tag of the latest version found
 func GetLatestVersionFromGitHub() (url string, tag string, err error) {
-	request, err := http.NewRequest(http.MethodGet, "https://api.github.com/repos/Wieku/danser-go/releases/latest", nil)
+	request, err := http.NewRequest(http.MethodGet, "https://api.github.com/repos/Uranite/danser-go/releases/latest", nil)
 	if err != nil {
 		return "", "", err
 	}

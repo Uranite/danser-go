@@ -12,6 +12,9 @@ var av1Profiles = []string{
 }
 
 var av1Presets = []string{
+	"-3",
+	"-2",
+	"-1",
 	"0",
 	"1",
 	"2",
@@ -31,9 +34,9 @@ var av1Presets = []string{
 type av1Settings struct {
 	RateControl       string `combo:"crf|Constant Rate Factor (CRF),vbr|VBR,cbr|CBR"`
 	Bitrate           string `showif:"RateControl=vbr,cbr"`
-	CRF               int    `string:"true" min:"0" max:"63" showif:"RateControl=crf"`
+	CRF               int    `string:"true" min:"0" max:"70" showif:"RateControl=crf"`
 	Profile           string `combo:"main|Main"`
-	Preset            string `combo:"0|0 (slowest),1,2,3,4,5,6,7,8,9,10,11,12,13|13 (fastest)"`
+	Preset            string `combo:"-3|-3 (slowest),-2,-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13|13 (fastest)"`
 	AdditionalOptions string
 }
 
@@ -66,11 +69,11 @@ func av1Common(rateControl, bitrate, profile string, crf int) (ret []string, err
 		// and does not support overlays but supports CBR.
 		ret = append(ret, "-svtav1-params", fmt.Sprintf("pred-struct=1:rc=2:tbr=%s:profile=%s", bitrate, profile))
 	case "crf":
-		if crf < 0 || crf > 63 {
-			return nil, fmt.Errorf("CRF parameter out of range [0-63]")
+		if crf < 0 || crf > 70 {
+			return nil, fmt.Errorf("CRF parameter out of range [0-70]")
 		}
 
-		ret = append(ret, "-svtav1-params", "enable-overlays=1", "-crf", strconv.Itoa(crf))
+		ret = append(ret, "-crf", strconv.Itoa(crf))
 	default:
 		return nil, fmt.Errorf("invalid rate control value: %s", rateControl)
 	}

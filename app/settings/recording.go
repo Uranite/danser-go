@@ -41,8 +41,8 @@ func initRecording() *recording {
 			Bitrate:           "10M",
 			CRF:               22,
 			Profile:           "main",
-			Preset:            "7",
-			AdditionalOptions: "",
+			Preset:            "4",
+			AdditionalOptions: "-svtav1-params tune=0",
 		},
 		H264NvencSettings: &h264NvencSettings{
 			RateControl:       "cq",
