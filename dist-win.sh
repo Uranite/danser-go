@@ -2,9 +2,9 @@
 export GOOS=windows
 export GOARCH=amd64
 export CGO_ENABLED=1
-export CC=x86_64-w64-mingw32-gcc
-export CXX=x86_64-w64-mingw32-g++
-export CGO_LDFLAGS="-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic"
+export CC=clang
+export CXX=clang++
+export CGO_LDFLAGS="-Wl,-Bstatic -lc++ -lpthread -Wl,-Bdynamic"
 export WINDRESFLAGS="-F pe-x86-64"
 export BUILD_DIR=./dist/build-win
 export TARGET_DIR=./dist/artifacts
@@ -64,7 +64,8 @@ resCore=$preRC'-core.dll'$postRC
 resDanser=$preRC''$postRC
 resLauncher=$preRC' launcher'$postRC
 
-$resgen <<< $resCore
+echo "$resCore" > $BUILD_DIR/res.rc
+windres -l 0 $WINDRESFLAGS -o $BUILD_DIR/danser.syso $BUILD_DIR/res.rc
 
 go run tools/assets/assets.go ./ $BUILD_DIR/
 
@@ -74,15 +75,17 @@ go build -trimpath -ldflags "-s -w -X 'github.com/wieku/danser-go/build.VERSION=
 
 rm -f danser.syso
 
-$resgen <<< $resDanser
+echo "$resDanser" > $BUILD_DIR/res.rc
+windres -l 0 $WINDRESFLAGS -o $BUILD_DIR/danser.syso $BUILD_DIR/res.rc
 
 cp {bass.dll,bass_fx.dll,bassmix.dll,libyuv.dll} $BUILD_DIR/
 
-$CC <<< --verbose -O3 -o $BUILD_DIR/danser-cli.exe -I. cmain/main_danser.c -I$BUILD_DIR/ -L$BUILD_DIR/ -ldanser-core $BUILD_DIR/danser.syso -municode
+$CC --verbose -O3 -o $BUILD_DIR/danser-cli.exe -I. cmain/main_danser.c -I$BUILD_DIR/ -L$BUILD_DIR/ -ldanser-core $BUILD_DIR/danser.syso -municode
 
-$resgen <<< $resLauncher
+echo "$resLauncher" > $BUILD_DIR/res.rc
+windres -l 0 $WINDRESFLAGS -o $BUILD_DIR/danser.syso $BUILD_DIR/res.rc
 
-$CC <<< --verbose -O3 -D LAUNCHER -o $BUILD_DIR/danser.exe -I. cmain/main_danser.c -I$BUILD_DIR/ -L$BUILD_DIR/ -ldanser-core $BUILD_DIR/danser.syso -municode
+$CC --verbose -O3 -D LAUNCHER -o $BUILD_DIR/danser.exe -I. cmain/main_danser.c -I$BUILD_DIR/ -L$BUILD_DIR/ -ldanser-core $BUILD_DIR/danser.syso -municode
 
 rm $BUILD_DIR/{danser.syso,danser-core.h}
 
