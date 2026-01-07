@@ -34,7 +34,7 @@ var libxPresets = []string{
 }
 
 type x264Settings struct {
-	RateControl       string `combo:"vbr|VBR,cbr|CBR,crf|Constant Rate Factor (CRF)"`
+	RateControl       string `combo:"vbr|VBR,cbr|CBR,crf|Constant Rate Factor (CRF),lossless|Lossless"`
 	Bitrate           string `showif:"RateControl=vbr,cbr"`
 	CRF               int    `string:"true" min:"0" max:"51" showif:"RateControl=crf"`
 	Profile           string `combo:"baseline,main,high,high444"`
@@ -43,9 +43,16 @@ type x264Settings struct {
 }
 
 func (s *x264Settings) GenerateFFmpegArgs() (ret []string, err error) {
-	ret, err = libxCommon(s.RateControl, s.Bitrate, s.CRF)
-	if err != nil {
-		return nil, err
+	if s.RateControl == "lossless" {
+		if s.Profile != "high444" {
+			return nil, fmt.Errorf("lossless x264 encoding requires 'high444' profile")
+		}
+		ret = append(ret, "-qp", "0")
+	} else {
+		ret, err = libxCommon(s.RateControl, s.Bitrate, s.CRF)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if !slices.Contains(libx264Profiles, s.Profile) {
@@ -63,7 +70,7 @@ func (s *x264Settings) GenerateFFmpegArgs() (ret []string, err error) {
 }
 
 type x265Settings struct {
-	RateControl       string `combo:"vbr|VBR,cbr|CBR,crf|Constant Rate Factor (CRF)"`
+	RateControl       string `combo:"vbr|VBR,cbr|CBR,crf|Constant Rate Factor (CRF),lossless|Lossless"`
 	Bitrate           string `showif:"RateControl=vbr,cbr"`
 	CRF               int    `string:"true" min:"0" max:"51" showif:"RateControl=crf"`
 	Profile           string `combo:"main,main444-8"`
@@ -72,9 +79,13 @@ type x265Settings struct {
 }
 
 func (s *x265Settings) GenerateFFmpegArgs() (ret []string, err error) {
-	ret, err = libxCommon(s.RateControl, s.Bitrate, s.CRF)
-	if err != nil {
-		return nil, err
+	if s.RateControl == "lossless" {
+		ret = append(ret, "-x265-params", "lossless=1")
+	} else {
+		ret, err = libxCommon(s.RateControl, s.Bitrate, s.CRF)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if !slices.Contains(libx265Profiles, s.Profile) {
